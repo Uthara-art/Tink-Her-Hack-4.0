@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lost & Found Portal</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        .hero {
+            height: 90vh;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                        url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            margin: 8px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .features {
+            padding: 50px 20px;
+            text-align: center;
+            background: white;
+        }
+
+        .features h2 {
+            margin-bottom: 30px;
+        }
+
+        .feature-box {
+            display: inline-block;
+            width: 250px;
+            margin: 15px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f4f6f9;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #222;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="hero">
+    <h1>Campus Lost & Found Portal</h1>
+    <p>
+        A smart and structured platform to report, search, and recover lost or found items efficiently within your campus.
+    </p>
+
+    <div>
+        <a href="/add" class="btn">Report Item</a>
+        <a href="/view" class="btn">View Items</a>
+    </div>
+</div>
+
+<div class="features">
+    <h2>Why Use Our Platform?</h2>
+
+    <div class="feature-box">
+        <h3>Image Upload</h3>
+        <p>Upload photos for better identification of items.</p>
+    </div>
+
+    <div class="feature-box">
+        <h3>Smart Search</h3>
+        <p>Quickly filter and search items with advanced filters.</p>
+    </div>
+
+    <div class="feature-box">
+        <h3>Status Tracking</h3>
+        <p>Track items from Open to Resolved seamlessly.</p>
+    </div>
+
+</div>
+
+<div class="footer">
+    Built with ❤️ by Team Uthara & Anju | Hackathon 2026
+</div>
+
+</body>
+</html>
