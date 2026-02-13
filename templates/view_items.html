@@ -22,16 +22,6 @@
             font-weight: bold;
         }
 
-        .search-box {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        input, select {
-            padding: 8px;
-            margin: 5px;
-        }
-
         .section-title {
             text-align: center;
             margin-top: 40px;
@@ -91,13 +81,6 @@
             background-color: #0056b3;
         }
 
-        .claim-box {
-            margin-top: 10px;
-            padding: 10px;
-            background: #f9f9f9;
-            border-radius: 6px;
-        }
-
         .match-box {
             margin-top: 10px;
             padding: 10px;
@@ -105,6 +88,13 @@
             border-radius: 6px;
             color: green;
             font-weight: bold;
+        }
+
+        .claim-box {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 6px;
         }
     </style>
 </head>
@@ -123,31 +113,11 @@
     <div>Recovery Rate: {{ recovery_rate }}%</div>
 </div>
 
-<!-- Search & Filter -->
-<form method="GET" action="/view" class="search-box">
-    <input type="text" name="search" placeholder="Search item name...">
-
-    <select name="type">
-        <option value="">All Types</option>
-        <option value="Lost">Lost</option>
-        <option value="Found">Found</option>
-    </select>
-
-    <select name="status">
-        <option value="">All Status</option>
-        <option value="Open">Open</option>
-        <option value="Claim Requested">Claim Requested</option>
-        <option value="Resolved">Resolved</option>
-    </select>
-
-    <button type="submit">Apply</button>
-</form>
-
 <!-- LOST SECTION -->
 <h3 class="section-title lost-title">Lost Items</h3>
 
 {% for item in items %}
-{% if item['type']|lower == 'lost' %}
+{% if item['type'] == 'Lost' %}
 <div class="card">
 
     <h3>{{ item['name'] }}</h3>
@@ -162,20 +132,25 @@
 
     <p>
         <strong>Status:</strong>
-        {% if item['status']|lower == "open" %}
+        {% if item['status'] == "Open" %}
             <span class="status-open">Open</span>
-        {% elif item['status']|lower == "claim requested" %}
+        {% elif item['status'] == "Claim Requested" %}
             <span class="status-claim">Claim Requested</span>
         {% else %}
             <span class="status-resolved">Resolved</span>
         {% endif %}
     </p>
 
-    <!-- MATCH ALERT -->
+    <!-- SMART MATCH SECTION -->
     {% if item['id'] in matches %}
-        <div class="match-box">
-            ⚡ Possible Match Found!
-        </div>
+    <div class="match-box">
+        ⚡ Smart Match Found! <br>
+        Confidence: {{ matches[item['id']]['score'] }}%
+        <br><br>
+        <a class="btn" href="/match/{{ item['id'] }}">
+            View Best Match
+        </a>
+    </div>
     {% endif %}
 
 </div>
@@ -186,7 +161,7 @@
 <h3 class="section-title found-title">Found Items</h3>
 
 {% for item in items %}
-{% if item['type']|lower == 'found' %}
+{% if item['type'] == 'Found' %}
 <div class="card">
 
     <h3>{{ item['name'] }}</h3>
@@ -201,28 +176,25 @@
 
     <p>
         <strong>Status:</strong>
-        {% if item['status']|lower == "open" %}
+        {% if item['status'] == "Open" %}
             <span class="status-open">Open</span>
-        {% elif item['status']|lower == "claim requested" %}
+        {% elif item['status'] == "Claim Requested" %}
             <span class="status-claim">Claim Requested</span>
         {% else %}
             <span class="status-resolved">Resolved</span>
         {% endif %}
     </p>
 
-    <!-- CLAIM BUTTON -->
-    {% if item['status']|lower == "open" %}
+    {% if item['status'] == "Open" %}
         <a class="btn" href="/claim/{{ item['id'] }}">
             Claim This Item
         </a>
     {% endif %}
 
-    <!-- APPROVE SECTION -->
-    {% if item['status']|lower == "claim requested" %}
+    {% if item['status'] == "Claim Requested" %}
         <div class="claim-box">
             <p><strong>Claimant:</strong> {{ item['claimant'] }}</p>
             <p><strong>Details:</strong> {{ item['claim_details'] }}</p>
-
             <a class="btn" href="/approve/{{ item['id'] }}">
                 Approve Claim
             </a>

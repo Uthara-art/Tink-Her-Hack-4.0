@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Best Match Result</title>
+</head>
+<body style="font-family: Arial; padding: 30px; background: #f4f6f9;">
+
+<h2>Best Match Analysis</h2>
+
+<h3>Lost Item</h3>
+<p><strong>Name:</strong> {{ lost['name'] }}</p>
+<p><strong>Description:</strong> {{ lost['description'] }}</p>
+<p><strong>Location:</strong> {{ lost['location'] }}</p>
+
+<hr>
+
+<h3>Best Matched Found Item</h3>
+
+{% if found %}
+<p><strong>Name:</strong> {{ found['name'] }}</p>
+<p><strong>Description:</strong> {{ found['description'] }}</p>
+<p><strong>Location:</strong> {{ found['location'] }}</p>
+<p><strong>Confidence Score:</strong> {{ score }}%</p>
+{% else %}
+<p>No strong match found.</p>
+{% endif %}
+
+<br>
+<a href="/view">Back</a>
+
+</body>
+</html>

@@ -49,6 +49,7 @@ def home():
 
 @app.route('/add', methods=['GET', 'POST'])
 def add_item():
+
     if request.method == 'POST':
 
         name = request.form['name']
@@ -123,7 +124,16 @@ def view_items():
     c.execute(query, params)
     items = c.fetchall()
 
-    # ---------- MATCH DETECTION ----------
+    # ---------- BEST MULTI-FACTOR MATCHING ----------
+
+    def word_overlap(text1, text2):
+        set1 = set(text1.lower().split())
+        set2 = set(text2.lower().split())
+
+        if len(set1) == 0:
+            return 0
+
+        return len(set1.intersection(set2)) / len(set1)
 
     matches = {}
 
@@ -131,11 +141,30 @@ def view_items():
     found_list = [item for item in items if item['type'].lower() == 'found' and item['status'].lower() == 'open']
 
     for lost in lost_list:
-        for found in found_list:
-            if lost['name'].lower() in found['name'].lower() or found['name'].lower() in lost['name'].lower():
-                matches[lost['id']] = found['id']
 
-    # Dashboard counts
+        best_score = 0
+        best_found = None
+
+        for found in found_list:
+
+            name_score = word_overlap(lost['name'], found['name'])
+            desc_score = word_overlap(lost['description'], found['description'])
+            location_score = 1 if lost['location'].lower() == found['location'].lower() else 0
+
+            final_score = (0.5 * name_score) + (0.3 * desc_score) + (0.2 * location_score)
+
+            if final_score > best_score:
+                best_score = final_score
+                best_found = found
+
+        if best_score > 0.5:
+            matches[lost['id']] = {
+                "found_id": best_found['id'],
+                "score": round(best_score * 100, 2)
+            }
+
+    # ---------- Dashboard counts ----------
+
     c.execute("SELECT COUNT(*) FROM items")
     total = c.fetchone()[0]
 
@@ -221,8 +250,59 @@ def approve_claim(id):
     conn.close()
 
     return redirect('/view')
+# ---------------- VIEW BEST MATCH ----------------
+
+@app.route('/match/<lost_id>')
+def view_best_match(lost_id):
+
+    conn = sqlite3.connect("database.db")
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+
+    # Get lost item
+    c.execute("SELECT * FROM items WHERE id=?", (lost_id,))
+    lost_item = c.fetchone()
+
+    if not lost_item:
+        conn.close()
+        return "Lost item not found"
+
+    # Get all open found items
+    c.execute("SELECT * FROM items WHERE type='Found' AND status='Open'")
+    found_items = c.fetchall()
+
+    def word_overlap(text1, text2):
+        set1 = set(text1.lower().split())
+        set2 = set(text2.lower().split())
+        if len(set1) == 0:
+            return 0
+        return len(set1.intersection(set2)) / len(set1)
+
+    best_score = 0
+    best_found = None
+
+    for found in found_items:
+
+        name_score = word_overlap(lost_item['name'], found['name'])
+        desc_score = word_overlap(lost_item['description'], found['description'])
+        location_score = 1 if lost_item['location'].lower() == found['location'].lower() else 0
+
+        final_score = (0.5 * name_score) + (0.3 * desc_score) + (0.2 * location_score)
+
+        if final_score > best_score:
+            best_score = final_score
+            best_found = found
+
+    conn.close()
+
+    return render_template(
+        "best_match.html",
+        lost=lost_item,
+        found=best_found,
+        score=round(best_score * 100, 2)
+    )
 
 # ---------------- RUN ----------------
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
